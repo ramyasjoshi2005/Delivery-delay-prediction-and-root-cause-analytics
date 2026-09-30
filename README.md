@@ -122,7 +122,3 @@ backend/
 - Integrate real-time weather and traffic data at the time of order placement.
 - Use a dataset with more organic variability in delivery times.
 
-## 22. Interview Explanation (2-3 Minutes)
-"I built a delivery delay prediction and root-cause analytics system to predict whether an order would be delivered later than promised. I started by analyzing historical order and delivery data to understand where delays were concentrated. I defined late delivery as actual delivery occurring after the promised delivery date. Since the model is intended to make a prediction before delivery happens, I ensured no post-delivery variables were used. I engineered time and operational features available at order placement and performed a two-proportion Z-test, which proved a statistically significant difference in delay rates between shipping modes.
-
-For modeling, I compared Logistic Regression, Random Forest, and XGBoost using a time-aware split, selecting Random Forest based on PR-AUC. I manually tuned the probability threshold to balance precision and recall. I then used SHAP to understand why individual orders received higher risk scores. Finally, I built a web application where users can enter order information, receive a late-delivery probability, and see the specific operational factors contributing to that prediction."
