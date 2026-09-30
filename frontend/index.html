@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Delay Prediction</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Delivery Delay Prediction & Root-Cause Analytics</h1>
+        <p>Amazon Data Scientist-1 Intern Project</p>
+    </header>
+    
+    <main>
+        <section id="overview">
+            <h2>1. Overview</h2>
+            <p><strong>Business Problem:</strong> Late deliveries impact customer satisfaction. Can we predict if an order will be late using only pre-delivery data?</p>
+            <p><strong>Target:</strong> Late = 1 if Actual Delivery Date > Promised Delivery Date.</p>
+            <p><strong>Leakage Prevention:</strong> Removed all post-order metrics (e.g., actual delivery date, delivery status) from features to prevent data leakage.</p>
+        </section>
+
+        <section id="statistics">
+            <h2>2. Statistical Analysis</h2>
+            <p><strong>Research Question:</strong> Is the late-delivery rate significantly different between Standard Class and First Class shipping?</p>
+            <p><strong>Null Hypothesis:</strong> No difference in late-delivery rate.</p>
+            <p><strong>Alternative Hypothesis:</strong> Significant difference in late-delivery rate.</p>
+            <p><strong>Test:</strong> Two-Proportion Z-Test</p>
+            <ul>
+                <li>Group 1 (Standard Class) Rate: 39.77%</li>
+                <li>Group 2 (First Class) Rate: 100.00%</li>
+                <li>Z-statistic: -179.27</li>
+                <li>p-value: 0.0 (Reject Null Hypothesis)</li>
+            </ul>
+            <p><strong>Interpretation:</strong> Standard Class has a significantly lower late-delivery rate compared to First Class.</p>
+        </section>
+
+        <section id="model-performance">
+            <h2>3. Model Performance</h2>
+            <p><strong>Selected Model:</strong> Random Forest (Selected based on PR-AUC & F1)</p>
+            <p><strong>Threshold Analysis:</strong> Selected 0.4 to balance Precision and Recall.</p>
+            <ul>
+                <li>ROC-AUC: 0.7457</li>
+                <li>PR-AUC: 0.8430</li>
+                <li>Precision: 0.8293</li>
+                <li>Recall: 0.6003</li>
+                <li>F1: 0.6965</li>
+            </ul>
+        </section>
+
+        <section id="root-cause">
+            <h2>4. Root-Cause Analytics (SHAP)</h2>
+            <p>According to our SHAP explainer, the most critical factors for delay prediction are:</p>
+            <ol>
+                <li>Shipping Mode (Standard Class vs. First Class)</li>
+                <li>Promised Delivery Days (Scheduled Days)</li>
+                <li>Sales & Order Timing (Month/Day of week)</li>
+            </ol>
+        </section>
+
+        <section id="prediction-studio">
+            <h2>5. Prediction Studio</h2>
+            <form id="prediction-form">
+                <div class="form-group">
+                    <label>Shipping Mode:</label>
+                    <select id="Shipping Mode">
+                        <option value="Standard Class">Standard Class</option>
+                        <option value="First Class">First Class</option>
+                        <option value="Second Class">Second Class</option>
+                        <option value="Same Day">Same Day</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Days for shipment (scheduled):</label>
+                    <input type="number" id="Days for shipment (scheduled)" value="4">
+                </div>
+                <div class="form-group">
+                    <label>Order Item Quantity:</label>
+                    <input type="number" id="Order Item Quantity" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Sales:</label>
+                    <input type="number" step="0.01" id="Sales" value="100.00">
+                </div>
+                <div class="form-group">
+                    <label>Product Price:</label>
+                    <input type="number" step="0.01" id="Product Price" value="100.00">
+                </div>
+                
+                <!-- Hidden defaults for categorical/date features just to run the model properly -->
+                <input type="hidden" id="Type" value="DEBIT">
+                <input type="hidden" id="Category Name" value="Cleats">
+                <input type="hidden" id="Customer Segment" value="Consumer">
+                <input type="hidden" id="Customer Country" value="EE. UU.">
+                <input type="hidden" id="Market" value="Pacific Asia">
+                <input type="hidden" id="Order Region" value="Oceania">
+                <input type="hidden" id="Order Country" value="Australia">
+                <input type="hidden" id="order_month" value="1">
+                <input type="hidden" id="order_day_of_week" value="1">
+                <input type="hidden" id="is_weekend" value="0">
+                <input type="hidden" id="quarter" value="1">
+                <input type="hidden" id="peak_season" value="0">
+
+                <button type="submit">Predict Late Delivery Risk</button>
+            </form>
+            
+            <div id="prediction-result" class="hidden">
+                <h3>Result: <span id="classification"></span></h3>
+                <p>Probability of Delay: <span id="probability"></span></p>
+                <p>Threshold: <span id="threshold"></span></p>
+                <h4>Top Contributing Factors (SHAP Local Explanation):</h4>
+                <ul id="explanation-list"></ul>
+            </div>
+        </section>
+    </main>
+    
+    <script src="app.js"></script>
+</body>
+</html>
